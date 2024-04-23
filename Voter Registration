@@ -1,0 +1,107 @@
+from datetime import datetime
+
+#Vote Class
+class Vote:
+    def __init__(self, first_name, last_name, birth, county, party):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.birth = birth
+        self.county = county
+        self.party = party
+
+        #Clearly displays voter details
+    def display_details(self):
+        return ("\nVoter: {} {}\nDOB: {} \nCounty: {} \nPolitical Party: {}".format(self.first_name, self.last_name, self.birth, self.county, self.party))
+
+#Allows users to change voter information
+    def update_information(self):
+        print("Update your voter information:")
+        new_first_name = input("Enter your new first name (press Enter to keep current): ")
+        self.first_name = new_first_name if new_first_name else self.first_name
+
+        new_last_name = input("Enter your new last name (press Enter to keep current): ")
+        self.last_name = new_last_name if new_last_name else self.last_name
+
+        new_birth = input("Enter your new date of birth (YYYY-MM-DD) (press Enter to keep current): ")
+        self.birth = new_birth if new_birth else self.birth
+
+        new_county = input("Enter your new county (press Enter to keep current): ")
+        self.county = new_county if new_county else self.county
+
+        new_party = input("Enter your new political party (press Enter to keep current): ")
+        self.party = new_party if new_party else self.party
+
+        print("Voter information updated successfully.")
+
+#Login for existing voters
+    @classmethod
+    def login(cls, existing_voters):
+        print("\nPlease login:")
+        first_name = input("Enter your first name: ")
+        last_name = input("Enter your last name: ")
+        dob = input("Enter your date of birth (YYYY-MM-DD): ")
+
+        for voter in existing_voters:
+            if voter.first_name == first_name and voter.last_name == last_name and voter.birth == dob:
+                # Voter found
+                print("Welcome, {} {}!".format(first_name, last_name))
+                choice = input(
+                    "Choose an option:\n1) View voter information\n2) Update voter information\n")
+                # Displays voter information
+                if choice == '1':
+                    print("Your voter information:")
+                    print(voter.display_details())
+                # Updates voter information
+                elif choice == '2':
+                    print("Updating voter information...")
+                    voter.update_information()
+                    print("Your (updated) voter information:")
+                    print(voter.display_details())
+                else:
+                    print("Invalid choice.")
+                return
+
+        print("Voter not found. Please check your information.")
+
+#Checks if user is 18 years old or older
+def is_18_or_older(date_of_birth):
+    dob = datetime.strptime(date_of_birth, '%Y-%m-%d')
+    current_date = datetime.now()
+
+    age = current_date.year - dob.year
+
+    if current_date.month < dob.month or (current_date.month == dob.month and current_date.day < dob.day):
+        age -= 1
+
+    return age >= 18
+
+#Collects voter information for new registrees
+def get_voter_information():
+    first_name = input("What is your first name? ")
+    last_name = input("What is your last name? ")
+    date_of_birth = input("Enter your date of birth (YYYY-MM-DD): ")
+    county = input("What county do you live in? ")
+    party = input("What political party are you affiliated with?(Republican, Democratic, Green, Libertarian, Independent): ")
+    if is_18_or_older(date_of_birth):
+        voter = Vote(first_name, last_name, date_of_birth, county, party)
+        print(voter.display_details())
+    else:
+        print("Sorry. You are not old enough to vote")
+        return None
+
+def main():
+    # Creates existing voters
+    existing_voters = [Vote("John", "Doe", "2000-07-11", "Bucks", "Republican"), Vote("Jane", "Doe", "1978-01-23", "Delaware", "Democratic")]
+    registration = input("Is this your first time registering to vote? (y/n) ")
+    if registration == 'y':
+        # Register new voter
+        get_voter_information()
+        print("You have been successfully registered to vote!")
+    elif registration == 'n':
+        # Login existing voter
+        Vote.login(existing_voters)
+    else:
+        print("Please try again")
+
+if __name__ == "__main__":
+    main()
